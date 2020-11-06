@@ -1,0 +1,65 @@
+SOQL/SOSL
+
+1 SELECT Name,Dob__c,Sex__c FROM Student__c WHERE Last_Name__c LIKE 's%'
+
+2 SELECT name,
+	  (SELECT First_Name__c,Last_Name__c ,Sex__c ,Age__c,Dob__c
+	    FROM Students__r
+	  )
+	FROM Class__c WHERE name LIKE 'X%'
+SELECT Name FROM Student__c WHERE Class__r.Name like 'X%'
+
+3 . SELECT name,
+	  (SELECT First_Name__c,Last_Name__c ,Sex__c ,Age__c,Dob__c
+	    FROM Students__r 
+	  )
+	FROM Class__c
+
+SELECT Name, Class__r.Name FROM Student__c
+
+4 SELECT name 
+	  (SELECT First_Name__c,Last_Name__c ,Sex__c ,Age__c,Dob__c
+	    FROM Students__r 
+	  )
+	FROM Class__c 
+
+5 SELECT Name
+ FROM Student__c
+WHERE Class__r.ClassTeacher__r.Name Like 'S%'
+
+6   SELECT Name FROM Student__c
+ WHERE CALENDAR_YEAR(DOB__c) > 2000
+
+7 SELECT Name 
+FROM Lead
+ WHERE LastModifiedDate = THIS_MONTH
+ 
+ 
+ 8.SELECT Name,(SELECT first_name__c
+ FROM Students__r WHERE first_name__c LIKE 'A%')
+ FROM Class__c
+ 
+ 
+9. SELECT subject__c,Teacher__r.Name
+
+FROM Teach__c 
+WHERE subject__c includes ('Hindi;English')
+
+10.SELECT Name,
+(SELECT Name,Subject__c FROM Teaches__r WHERE Subject__c  INCLUDES ('Hindi','Maths')),
+ (SELECT First_Name__c FROM Students__r) FROM Class__c  WHERE Id
+ IN (SELECT Class__c FROM Teach__c WHERE Subject__c INCLUDES ('Hindi','Maths'))
+
+11.SELECT Name, Number_Of_Students__c
+FROM Class__c
+
+12.SELECT count(Name) 
+FROM Student__c
+GROUP BY CALENDAR_MONTH(DOB__c) 
+ORDER BY CALENDAR_MONTH(DOB__c) ASC
+
+13.FIND {"John"} IN Name Fields 
+RETURNING Student__c(name),contact(name)
+
+14.FIND {"John"} IN ALL Fields 
+RETURNING Student__c(name WHERE sex__c LIKE 'Male'),contact(name WHERE sex__c LIKE 'Male')
