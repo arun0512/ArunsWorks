@@ -1,0 +1,20 @@
+<apex:page controller="QueryController">
+    <style>
+        .textArea{
+            width : 600px;
+            margin-top : 50px;
+            margin-left : 50px;
+            margin-right : 10px;
+        }
+    </style>
+    <apex:form >
+        <apex:outputPanel id="QueryForm">
+            <apex:inputTextarea value="{!QueryString}" styleClass="textArea" html-placeholder="Enter your query..." />
+            <apex:commandButton value="Execute Query" action="{!executeThisQuery}" reRender="result,QueryForm" />
+            <apex:pageMessages id="showMsg"></apex:pageMessages>
+        </apex:outputPanel>
+        <apex:outputPanel id="result" >
+            <c:ResultComponent rendered="{!renderResult}" query="{!QueryString}" />
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

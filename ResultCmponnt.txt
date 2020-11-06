@@ -1,0 +1,25 @@
+<apex:component controller="QueryController">
+    <apex:attribute name="query" description="input query string" Type="String" assignTo="{!QueryToExecute}" />
+
+    <apex:pageBlock >
+        <apex:pageblockTable value="{!recordType}" var="record">
+            <apex:repeat value="{!lstFields}" var="fld">
+                <apex:column value="{!record[fld]}" >
+                    <apex:facet name="header">
+                       <apex:commandLink action="{!SortData}" value="{!fld}" rerender="result">
+                         <apex:param value="{!fld}" name="column" assignTo="{!fieldName}" ></apex:param>
+                       </apex:commandLink>
+                    </apex:facet>
+                </apex:column>
+            </apex:repeat>    
+        </apex:pageblockTable>
+        <div> 
+            <apex:commandButton value="First" action="{!setCon.First}" disabled="{!!setCon.hasPrevious}" rerender="result" />
+            <apex:commandButton value="Previous" action="{!setCon.Previous}" disabled="{!!setCon.hasPrevious}" reRender="result" />
+            <apex:commandButton value="Next" action="{!setCon.Next}" disabled="{!!setCon.hasNext}" rerender="result" />
+            <apex:commandButton value="Last" action="{!setCon.Last}" disabled="{!!setCon.hasNext}" rerender="result" />
+            <apex:outputText >{!StartingPageRecord}-{!EndingPageRecord} of {!setCon.ResultSize}</apex:outputText>
+        </div>
+    </apex:pageBlock>
+
+</apex:component>
