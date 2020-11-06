@@ -1,0 +1,29 @@
+public class DeleteStudentController { // test.vfp
+
+    public String BaseUrl{get;set;}
+    public boolean Render{get;set;}
+    
+    public DeleteStudentController(ApexPages.StandardSetController controller) {
+        String urlInstance = String.valueof(System.URL.getSalesforceBaseURL());
+        System.debug('urlInstance----'+urlInstance);
+
+        BaseUrl = 'https://curious-raccoon-eq42t9-dev-ed.lightning.force.com/lightning/o/Student__c/list?filterName=Recent';
+        if(controller.getSelected().size() == 0) {
+            Render = false;
+        }else {
+            Render = true;
+        }
+    }
+    
+        @RemoteAction
+    public static Database.DeleteResult[] deleteStudents(List<ID> students) {
+        Database.DeleteResult[] result;
+        try {
+            result = Database.delete(students);
+        }catch(Exception ex) {
+            ApexPages.addMessages(ex);
+        }
+        return result;
+    }
+}//https://curious-raccoon-eq42t9-dev-ed.lightning.force.com/lightning/o/Student__c/list?filterName=00B2w0000014bkpEAA
+// https://curious-raccoon-eq42t9-dev-ed--c.visualforce.com]
