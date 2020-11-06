@@ -1,0 +1,21 @@
+global class notifyNonModifiedOpportunityScheduler implements Schedulable {
+    global void execute(SchedulableContext ctx) {
+        List<Opportunity> opportunityList = [	SELECT Id,Owner.Email
+                                                   FROM Opportunity
+                                                   WHERE LastModifiedDate = LAST_N_DAYS:30 ];
+        
+        List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>();
+        
+        for(Opportunity op : opportunityList)
+        {
+        Messaging.SingleEmailMessage singleMail = new Messaging.SingleEmailMessage();
+            String[] toaddress = new String[]{ op.Owner.Email };
+            singleMail.setSubject('Opportunity not modified in last 30 days');
+            singleMail.setToAddresses(toaddress);
+            singleMail.setHtmlBody('');
+            emails.add(singleMail);
+        }
+        Messaging.sendEmail(emails);
+    }
+    
+}

@@ -1,0 +1,30 @@
+public class ManipulateAccount { 
+    public static void updateAccountWithContactIDs(Id COntactID)
+    {
+   {     
+        Contact c = [SELECT Account.ContactIDs__c, AccountId FROM Contact WHERE id =: COntactID];
+        String COntactIDsInAccount=c.Account.ContactIDs__c;
+        Id accountId = c.AccountId;
+        Account acc = c.Account;
+        if(acc.ContactIDs__c !=null && acc.ContactIDs__c.contains(COntactID))
+        {
+            return;
+        }
+        else
+        {
+            acc.ContactID__c+=COntactID;
+        }
+        List<Contact> listOfContact = [SELECT Id FROM Contact WHERE Account.Id =: accountId];
+        List<ID> listOfContactId=new List<ID>();
+        for(Contact cntct : listOfContact)
+        {
+            listOfContactId.add(cntct.Id);
+        }
+        String contactListString = String.join(listOfContactId,',');
+        if(COntactIDsInAccount == null)
+        {
+            acc.ContactIDs__c = contactListString;            
+        }
+       update acc;  
+    }
+}

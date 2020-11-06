@@ -1,0 +1,21 @@
+public class PopulateManagerOnOpportunity {
+    public static void populateManager(List<Opportunity> oppList)
+    {
+        List<Id> oppContactIdList = new List<Id>();
+        List<Opportunity> oppsToBeUpdated = new List<Opportunity>();
+        for(Opportunity opp : oppList){
+            if(opp.BillToContact__c != null && opp.Manager__c == null)
+            {
+                oppContactIdList.add(opp.BillToContact__c);
+                oppsToBeUpdated.add(opp);
+            }
+        }
+        Map<Id,Contact> contactMap = new Map<Id,Contact>( [SELECT Id, AccountId FROM Contact
+                                                                    WHERE Id in : oppContactIdList]);
+        for(Opportunity opp:oppsToBeUpdated)
+        {
+            opp.Manager__c = contactMap.get(opp.BillToContact__c).AccountId;
+        }        
+        update oppsToBeUpdated;
+    }
+}
