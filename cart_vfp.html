@@ -1,0 +1,137 @@
+<apex:page controller="ShoppingCartController01">
+    <apex:form >
+        <style>
+            .main-heading{
+            font-size : 300%;
+            text-align : center;
+            margin-bottom : 20px;
+            }
+            .center-button{
+            text-align : center;
+            margin-bottom : 15px;
+            }
+            .dataTable{
+            margin : 10px;
+            table-layout: fixed;            
+            }
+            .pagination-buttons{
+            margin-bottom : 30px;
+            }
+        </style>
+        <div class = "main-heading">Shopping Cart</div>
+        <apex:pageBlock title="Purchase Orders History"> 
+            <apex:pageBlockTable value="{!Orders}" var="order" id="orderTable" styleClass="dataTable">
+                <apex:column value="{!Order.Id}" headerValue="PO ID" />
+                <apex:column headerValue="Order Price">
+                    <apex:facet name="header">
+                        <apex:commandLink value="Order Price" action="{!sortOrder}" reRender="orderTable" />
+                    </apex:facet>
+                    <apex:outputText value="{!Order.Price__c}"></apex:outputText>
+                </apex:column>
+                <!--<apex:column value="{!Order.Price__c}" headerValue="Order Price"/> -->
+                <apex:column value="{!Order.Order_Status__c}" headerValue="Order Status"/>
+            </apex:pageBlockTable>
+            <div class = "pagination-buttons"> 
+                <apex:commandButton value="First" action="{!setConOrder.First}" disabled="{!!setConOrder.hasPrevious}" />
+                <apex:commandButton value="Previous" action="{!setConOrder.Previous}" disabled="{!!setConOrder.hasPrevious}" />
+                <apex:commandButton value="Next" action="{!setConOrder.Next}" disabled="{!!setConOrder.hasNext}" />
+                <apex:commandButton value="Last" action="{!setConOrder.Last}" disabled="{!!setConOrder.hasNext}" />
+                <apex:outputText >{!StartingPageRecordOrder}-{!EndingPageRecordOrder} of {!setConOrder.ResultSize}</apex:outputText>
+            </div>
+        </apex:pageBlock>
+        
+        <div class = "center-button"><apex:commandButton value="Add new Purchase" action="{!addPurchase}" reRender="Products" /> </div>
+        
+        <apex:outputPanel id="Products">
+            <apex:pageBlock title="Products"  rendered="{!RenderProducts}">
+                <apex:inputText html-placeholder="Search Products" value="{!productName}">
+                    <apex:actionSupport event="onkeyup" action="{!SearchProduct}" rerender="ProductTable,ProductTableButtons" />
+                </apex:inputText>
+                <apex:commandButton value="Add To Cart" action="{!addSelected}" rerender="cartSection , ProductTable" style="float:right" />
+                <apex:pageBlockTable value="{!WrapProducts}" var="wrapProduct" id="ProductTable" styleClass="dataTable">
+                    <apex:column headerValue="Select Products"><apex:inputCheckbox disabled="{!if(wrapProduct.product.Quantity_Available__c == 0||wrapProduct.product.Quantity_Available__c == null,true,false)}" value="{!wrapProduct.Selected}"/></apex:column>
+                         <apex:column headerValue="Product Name"  id="sortByName">
+                        <apex:facet name="header">
+                            <apex:commandLink value="Product Name" action="{!sortData}" reRender="Products" />
+                        </apex:facet>
+                        <apex:outputText value="{!wrapProduct.product.Name}"></apex:outputText>
+                    </apex:column>
+                    <apex:column value="{!wrapProduct.product.ProductCode}" headerValue="Product Code" />
+                    <apex:column value="{!wrapProduct.product.Description}" headerValue="Product Description" />
+                    <apex:column value="{!wrapProduct.product.price_per_unit__c}" headerValue="Price per Unit" />
+                    <apex:column value="{!wrapProduct.product.Quantity_Available__c}" headerValue="Quantity available" />
+                </apex:pageBlockTable>
+                <div class = "pagination-buttons">
+                    <apex:outputPanel id="ProductTableButtons" >
+                        <apex:commandButton value="First" action="{!setConProduct.First}" disabled="{!!setConProduct.hasPrevious}" reRender="ProductTable,ProductTableButtons" />
+                        <apex:commandButton value="Previous" action="{!setConProduct.Previous}" disabled="{!!setConProduct.hasPrevious}"  reRender="ProductTable,ProductTableButtons" />
+                        <apex:commandButton value="Next" action="{!setConProduct.Next}" disabled="{!!setConProduct.hasNext}" reRender="ProductTable,ProductTableButtons" />
+                        <apex:commandButton value="Last" action="{!setConProduct.Last}" disabled="{!!setConProduct.hasNext}" reRender="ProductTable,ProductTableButtons" />
+                        <apex:outputText >{!StartingPageRecord}-{!EndingPageRecord} of {!setConProduct.ResultSize}</apex:outputText>
+                    </apex:outputPanel>
+                </div>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="cartSection">
+            <apex:pageBlock title="Cart items"  rendered="{!RenderCart}">
+                <apex:pageBlockTable value="{!CartItems}" var="wrapProduct" styleClass="dataTable">
+                    <apex:column value="{!wrapProduct.product.Name}" headerValue="Product Name" />
+                    <apex:column value="{!wrapProduct.product.ProductCode}" headerValue="Product Code" />
+                    <apex:column value="{!wrapProduct.product.price_per_unit__c}" headerValue="Price per Unit" />
+                    <apex:column headerValue="Quantity" >
+                        <apex:outputPanel rendered="{!NOT(MakeItReadOnly)}">
+                            <apex:inputText value="{!wrapProduct.Quantity}">
+                                <apex:actionSupport event="onfocus" action="{!setPreviousQuantity}" rerender="ProductTable">
+                                    <apex:param name="previousQuantity" value="{!wrapProduct.Quantity}" assignTo="{!previousQuantity}" />
+                                </apex:actionSupport>
+                                <apex:actionSupport event="onchange" action="{!updateQuantity}" rerender="ProductTable,cartSection">
+                                    <apex:param name="wrapProduct" value="{!wrapProduct.product.Id}" assignTo="{!WrappedProductId}"/>
+                                </apex:actionSupport>
+                            </apex:inputText>
+                            <apex:outputText style="color:red" rendered="{!if(PreviousQuantity == wrapProduct.Quantity,true,false)}" value="Tried to enter Invalid Quantity"></apex:outputText>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!MakeItReadOnly}">
+                            <apex:outputText value="{!wrapProduct.Quantity}"  />
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column >
+                        <apex:commandLink value="delete" action="{!removeFromCart}" reRender="Products,cartSection">
+                            <apex:param name="wrapProduct" value="{!wrapProduct.product.Id}" assignTo="{!WrappedProductId}"/>
+                        </apex:commandLink>
+                    </apex:column>
+                </apex:pageBlockTable>
+                <div class="center-button"><apex:commandButton value="Checkout" action="{!checkout}" reRender="invoiceSection , cartSection" /></div>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="invoiceSection">
+            <apex:pageBlock rendered="{!RenderInvoice}">
+                <apex:outputPanel >Invoice No. : INV00
+                    <apex:outputText value="{0, date, ddMMYYYY}">
+                        <apex:param value="{!today()}" /> 
+                    </apex:outputText>
+                    <div style="float : right">
+                        <apex:outputText value="{0, date, dd MMM YYYY}" >
+                            Order Date :<apex:param value="{!today()}" /> 
+                        </apex:outputText>
+                    </div>
+                </apex:outputPanel>
+                <apex:pageBlockTable value="{!CartItems}" var="wrapProduct" styleClass="dataTable">
+                    <apex:column value="{!wrapProduct.product.Name}" headerValue="Product Name" />
+                    <apex:column value="{!wrapProduct.product.ProductCode}" headerValue="Product Code" />
+                    <apex:column value="{!wrapProduct.Quantity}" headerValue="Price per Unit" />
+                    <apex:column value="{!wrapProduct.product.price_per_unit__c}" headerValue="Price per Unit" />
+                    <apex:column headerValue="Total">
+                        <apex:outputText value="{0, number,$###,###,##0.00}">
+                            <apex:param value="{!wrapProduct.product.price_per_unit__c*wrapProduct.Quantity}" />
+                        </apex:outputText>
+                    </apex:column>
+                </apex:pageBlockTable>
+                <div style = "float:right;margin-right : 150px;">Total :<apex:outputText value="{!TotalOrderPrice}" /></div><br/>
+                <div class = "center-button"><apex:commandButton value="Place Order" action="{!placeOrder}" /></div>
+            </apex:pageBlock>
+            
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>
