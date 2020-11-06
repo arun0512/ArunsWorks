@@ -1,0 +1,8 @@
+public with sharing class contactController {
+    
+    @AuraEnabled
+    public static Contact saveContact(Contact contactToSave) {
+        upsert contactToSave ;
+        return contactToSave ;
+    }
+}

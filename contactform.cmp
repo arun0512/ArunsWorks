@@ -1,0 +1,65 @@
+<aura:component controller = "contactController">
+    <aura:attribute name = "savedContact" type="Contact" />
+    <aura:attribute name = "result" type="Boolean" />
+    <aura:attribute name = "newContact" type="Contact" default="{ 'sobjectType': 'Contact',
+                                                                'FirstName': '',
+                                                                'LastName': '',
+                                                                'Email': '',
+                                                                'Phone': '',
+                                                                'Fax': ''}"/>
+    <aura:if isTrue="{!v.result}">
+        <ui:message title="Confirmation" severity="confirm" closable="true" >
+            Contact saved successfully ..
+            <c:savedContact contact = "{!v.savedContact}" />
+        </ui:message>
+    </aura:if>
+    <aura:if isTrue="{!(v.result == false)}" >
+        <ui:message title="Error" severity="error" closable="true">
+            Could not save contact..!
+        </ui:message>
+    </aura:if>
+    
+    <!-- CREATE NEW Contact -->
+    <div aria-labelledby="newcontactform">
+        <fieldset class="slds-box slds-theme--default slds-container--small">
+            <legend id="newcontactform" class="slds-text-heading--small 
+                                               slds-p-vertical--medium">
+                Add Contact
+            </legend>
+            <!-- CREATE NEW Contact FORM -->
+            <form class="slds-form--stacked">          
+                <lightning:input aura:id="contactform" label="First Name"
+                                 name="contactfname"
+                                 value="{!v.newContact.FirstName}"
+                                 required="true"/> 
+                <lightning:input aura:id="contactform" label="Last Name"
+                                 name="contactlname"
+                                 value="{!v.newContact.LastName}"
+                                 required="true"/> 
+                <lightning:input aura:id="contactform" label="Email"
+                                 name="contactemail"
+                                 type="email"
+                                 value="{!v.newContact.Email}"
+                                 required="true"/> 
+                <lightning:input aura:id="contactform" label="Phone"
+                                 name="contactphone"
+                                 type="tel"
+                                 value="{!v.newContact.Phone}"
+                                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
+                                 messageWhenPatternMismatch="You have entered invalid phone!"
+                                 required="true"/> 
+                <lightning:input aura:id="contactform" label="fax"
+                                 name="contactfax"
+                                 type="tel"
+                                 value="{!v.newContact.Fax}"
+                                 pattern="[0-9]"
+                                 messageWhenPatternMismatch="You have entered invalid fax!"
+                                 required="true"/> 
+                <lightning:button label="Create Contact" 
+                                  class="slds-m-top--medium"
+                                  variant="brand"
+                                  onclick="{!c.createContact}"/>
+            </form>
+        </fieldset>
+    </div>
+</aura:component>
