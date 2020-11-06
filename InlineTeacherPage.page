@@ -1,0 +1,9 @@
+<apex:page standardController="Contact">
+    <apex:pageBlock >
+        <div style = "background-color: blue !important;">            
+            <apex:pageBlockSection >
+                <apex:outputText value="{! Contact.RecordType.Name}" style="text-align:center !important;"/>
+            </apex:pageBlockSection>
+        </div>
+    </apex:pageBlock>
+</apex:page>

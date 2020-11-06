@@ -1,0 +1,41 @@
+<apex:page standardController="Student__c" extensions="DeleteStudentRemoteActionController" recordSetVar="students">
+    <apex:form >
+        <apex:pageMessage severity="ERROR" summary="No records selected" rendered="{! !render}" strength="1"/>
+        <apex:pageBlock rendered="{! render}">
+            Confirm Deletion
+            <apex:pageBlockTable value="{!selected}" var="student">
+                <apex:column value="{!student.Name}" />
+            </apex:pageBlockTable>
+            <apex:commandButton value="Continue" onclick="deleteStudent();return false;" />
+            <apex:commandButton value="Cancel" action="{!Cancel}" />
+        </apex:pageBlock>
+    </apex:form>
+    <script src="/soap/ajax/45.0/connection.js"></script>
+    <script>
+        Visualforce.remoting.timeout = 120000 ;
+    function deleteStudent()
+    {
+        let selectedStudents = new Array();
+        <apex:repeat value="{! selected}" var="student">
+            selectedStudents.push('{!student}');    
+        </apex:repeat>
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.DeleteStudentRemoteActionController.deleteStudents}', selectedStudents, handleResult);
+    }
+    
+    function handleResult(result, event)
+    {
+        if(event.statusCode == 200) 
+        {
+            alert('Selected students deleted successfully..');
+            sforce.connection.sessionId = '{!$Api.Session_ID}';
+            var res = sforce.connection.describeSObjects(['Student__c']);
+            var newId = res[0].keyPrefix;
+            location.replace("/"+newId);
+        }
+        else 
+        {
+            alert('Failed to delete students');
+        }
+    }
+    </script>
+</apex:page>

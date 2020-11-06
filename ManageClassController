@@ -1,0 +1,35 @@
+public class ManageClassController 
+{
+    public List<Class__c> classes {set;}
+    public Class__c classObj {get; set;}
+    public Id classId {get; set;}
+    public Boolean renderEdit {get; set;}
+    
+    public ManageClassController()
+    {
+        renderEdit = false;
+        classObj = new Class__c();
+    }
+    public List<Class__c> getClasses()
+    {
+        return  [SELECT Id, Name, ClassTeacher__r.Name, MyCount__c, MaxSize__c FROM Class__c];
+    }
+    public PageReference getclassObject()
+    {
+        classObj = [SELECT Id, Name, ClassTeacher__r.Name, MyCount__c, MaxSize__c FROM Class__c where id =: classId]; 
+        return null;
+    }
+    
+    public PageReference deleteClass()
+    {
+        classObj = [SELECT Id FROM Class__c where id =: classId]; 
+        DELETE classObj;
+        return null;
+    }
+    public PageReference save() 
+    {
+        UPDATE classObj;
+        renderEdit = false;
+        return null;
+    }    
+}

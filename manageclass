@@ -1,0 +1,34 @@
+<apex:page controller="ManageClassController">
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockSection >
+                <apex:outputPanel id="pb1">
+                    <apex:pageBlockTable value="{! classes}" var="c">
+                        <apex:column value="{! c.Id}"/>
+                        <apex:column value="{! c.Name}"/>
+                        <apex:column value="{! c.ClassTeacher__r.Name}"/>
+                        <apex:column value="{! c.MaxSize__c}"/>
+                        <apex:column >                                              
+                            <apex:commandButton value="Edit" action="{!getClassObject}" rerender="EditClass">
+                                <apex:param name="p1" value="true" assignTo="{!renderEdit}" />
+                                <apex:param name="p2" value="{! c.Id}" assignTo="{!classId}" />
+                            </apex:commandButton>
+                        </apex:column>
+                        <apex:column >                        
+                            <apex:commandButton value="Delete" action="{! deleteClass}" rerender="pb1">
+                                <apex:param name="classId" value="{! c.Id}" assignTo="{!classId}" />
+                            </apex:commandButton>
+                        </apex:column>
+                    </apex:pageBlockTable>   
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+            <apex:outputPanel id="EditClass">
+                <apex:pageBlockSection rendered="{!renderEdit}"> 
+                    <apex:inputField value="{!classObj.Name}" />
+                    <apex:inputField value="{!classObj.MaxSize__c}"/>
+                    <apex:commandButton value="Save" action="{!save}" id="saveButton" reRender="pb1,EditClass"/>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

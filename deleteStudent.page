@@ -1,0 +1,36 @@
+<apex:page standardController="Student__c" recordSetVar="students" extensions="DeleteStudentController">
+    <apex:form >
+        <apex:pageMessage severity="ERROR" summary="No records selected" rendered="{! !render}" strength="1"/>
+        <apex:pageBlock rendered="{! render}">
+            Confirm Deletion
+            <apex:pageBlockTable value="{!selected}" var="student">
+                <apex:column value="{!student.Name}" />
+            </apex:pageBlockTable>
+            <apex:commandButton value="Continue" onclick="deleteStudent();return false;" />
+            <apex:commandButton value="Cancel" action="{!Cancel}" />
+        </apex:pageBlock>
+    </apex:form>
+    <script src="/soap/ajax/45.0/connection.js"></script>
+    <script>
+        sforce.connection.sessionId = "{!$Api.Session_ID}";
+    function deleteStudent(){
+        let selectedStudents = new Array();
+        <apex:repeat value="{! selected}" var="student">
+            selectedStudents.push('{!student}');    
+        </apex:repeat>
+        let delResult = sforce.connection.deleteIds([selectedStudents]);
+        if (delResult[0].getBoolean("success"))
+        {
+            alert("selected students deleted successfully");
+            sforce.connection.sessionId = '{!$Api.Session_ID}';
+            let res = sforce.connection.describeSObjects(['Student__c']);
+            let newId = res[0].keyPrefix;
+            location.replace("/"+newId);
+        } 
+        else
+        {
+            alert("failed to delete students");
+        }  
+    }
+    </script>
+</apex:page>

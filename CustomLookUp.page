@@ -1,0 +1,23 @@
+<apex:page controller="CustomLookUpController">
+     <apex:form >
+         <apex:pageBlock >
+<apex:pageBlockSection columns="1">
+          <apex:selectRadio value="{!selectedContact}">
+                <apex:selectOptions value="{!contactOptions}"><br/></apex:selectOptions>
+                </apex:selectRadio>
+         </apex:pageBlockSection>
+         </apex:pageBlock>
+
+                  
+                <br/>
+ 
+           <apex:pageBlock >
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton action="{!saveContact}" value="Save" />
+                <apex:commandButton action="{!clearContact}" value="Clear" />
+                <apex:commandButton action="{!cancel}" value="Cancel" />
+                <apex:outputText value="{!selectedContact}"></apex:outputText>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

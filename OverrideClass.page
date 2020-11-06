@@ -1,0 +1,19 @@
+<apex:page standardController="Class__c">
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockbuttons >
+                <apex:commandButton value="Save" action="{!save}"/>
+            </apex:pageBlockbuttons>
+            <apex:pageBlockSection columns="2">
+                <apex:inputField value="{! Class__c.Name}"/>
+                <apex:inputField value="{! Class__c.Custom_Status__c}"/>
+                <apex:inputField value="{! Class__c.MaxSize__c}"/>
+                <apex:inputField value="{! Class__c.MyCount__c}"/>
+                <apex:inputField value="{! Class__c.Fee__c}"/>
+                <apex:inputField value="{! Class__c.Detailed_Description__c}"/>
+                <apex:inputField value="{! Class__c.Board__c}"/>
+                <apex:inputField value="{! Class__c.ClassTeacher__c}"/>
+            </apex:pageBlockSection>           
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
