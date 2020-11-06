@@ -1,0 +1,42 @@
+<contacts>
+	<contact>
+	<fname>Prakash</fname>
+	<lname>Gyamlani</lname>
+	<email>abcd@gmail.com</email>
+	<department>Test</department>
+	<phone>9222222222</phone>
+	</contact>
+
+	<contact>
+	<fname>Sumit</fname>
+	<lname>Gyamlani1</lname>
+	<email>Sumit@gmail.com</email>
+	<department>Test</department>
+	<phone>9222222222</phone>
+	</contact>
+
+	<contact>
+	<fname>Vivek</fname>
+	<lname>Gyamlani2</lname>
+	<email>Vivek@gmail.com</email>
+	<department>Test</department>
+	<phone>9222222222</phone>
+	</contact>
+
+	<contact>
+	<fname>Kushal</fname>
+	<lname>Gyamlani4</lname>
+	<email>Kushal@gmail4.com</email>
+	<department>Test</department>
+	<phone>9222222222</phone>
+	</contact>
+
+	<contact>
+	<fname>Smita</fname>
+	<lname>Gyamlani5</lname>
+	<email>Smita@gmail.com</email>
+	<department>Test</department>
+	<phone>9222222222</phone>
+	</contact>
+
+</contacts>
