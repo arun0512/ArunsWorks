@@ -1,0 +1,78 @@
+trigger insertStudentOnClassTrigger on Student__c (after insert,after update,after delete ) {
+    
+    
+    Set<Id> classIds = new Set<Id>();  
+    
+    
+    List <Class__c> listOfclasses = [SELECT id,mycount__c from Class__c ];// for updating my count
+    
+    if(Trigger.isDelete){// for updating my count in this assgnment, since this is on same object so updating it in insertStudentOnClassTrigger
+        for (Student__c student : trigger.Old){
+            classIds.add(student.Class__c);
+        }
+        
+        AggregateResult[] groupedResults=[Select COUNT(id) cnt,Class__c
+                                          from Student__c 
+                                          WHERE Class__C IN : classIds
+                                          GROUP BY Class__c];
+        
+        
+        for(AggregateResult ar : groupedResults){
+            
+            Integer cnt =Integer.valueOf(ar.get('cnt'));
+            Id clsId =(Id) (ar.get('Class__c'));
+            
+            
+            for(Class__c c : listOfclasses){
+                if(c.id == clsId){
+                    c.mycount__c=cnt;
+                }
+            }
+            update listOfclasses;  
+            
+        }  
+        
+    }
+    
+    if((Trigger.isInsert) || (Trigger.isUpdate)){
+        
+        for (Student__c student : trigger.New){
+            classIds.add(student.Class__c);
+        }
+        AggregateResult[] groupedResults=[Select MAX(Class__r.maxSize__c) maxSize,COUNT(id) cnt,Class__c
+                                          from Student__c 
+                                          WHERE Class__C IN : classIds
+                                          GROUP BY Class__c];
+        
+        
+        
+        classIds = new Set<Id>();
+        for(AggregateResult ar : groupedResults){
+            Integer maxSize =Integer.valueOf(ar.get('maxSize'));
+            Integer cnt =Integer.valueOf(ar.get('cnt'));
+            Id clsId =(Id) (ar.get('Class__c'));   
+            
+            
+            if(cnt >= maxSize){	
+                classIds.add(clsId);
+            }
+            else  {// for updating my count in this assgnment, since this is on same object so updating it in insertStudentOnClassTrigger
+                       
+                for(Class__c c : listOfclasses){
+                    if(c.id == clsId){
+                        c.mycount__c=cnt;
+                    }
+                }
+                update listOfclasses;            
+            }
+            
+        }
+        for(Student__c stdnt :  Trigger.new){         
+            if(classIds.contains(stdnt.Class__c)){
+                Trigger.newMap.get(stdnt.id).addError(System.Label.class_max_size_msg); 
+            }
+            
+        }
+    }
+    
+}
